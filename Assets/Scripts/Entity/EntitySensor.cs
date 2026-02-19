@@ -8,85 +8,114 @@ public enum GameSide : int {
     BOTTOM
 };
 
+[RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
-public class EntitySensor : MonoBehaviour {
-
-    private RaycastHit2D[] hit_buffer = new RaycastHit2D[10];
+public class EntitySensor : MonoBehaviour
+{
+    private BoxCollider2D box_collider;
+    private ContactPoint2D[] contact_buffer = new ContactPoint2D[16];
     private ContactFilter2D contact_filter;
+    private Collider2D[] hit_per_side = new Collider2D[4];
 
-    private readonly Vector2[] CAST_DIRECTIONS = {
+    private readonly Vector2[] SIDE_DIRECTIONS = {
         Vector2.left,
         Vector2.up,
         Vector2.right,
         Vector2.down
     };
 
-    private Vector2[] cast_sizes = new Vector2[4];
+    public bool is_grounded = false;
+    public bool[] is_touching = new bool[4];
 
     public event Action<GameSide, Collider2D> onHit;
     public event Action<GameSide> onClear;
 
-    public float[] distance = new float[4] {
-        float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue
-    };
+    private const float GROUND_NORMAL_Y = 0.5f;
 
-    public float entity_height = 0.0f;
+    void Awake()
+    {
+        box_collider = GetComponent<BoxCollider2D>();
 
-    private const float CAST_DISTANCE = 5.0f;
-    private const float CAST_THICKNESS = 0.05f;
-
-    void Awake() {
         int layer_mask = LayerMask.GetMask("Floor") | LayerMask.GetMask("Wall");
-
         contact_filter = new ContactFilter2D();
         contact_filter.SetLayerMask(layer_mask);
-
-        BoxCollider2D col = GetComponent<BoxCollider2D>();
-        Vector2 size = col.bounds.size;
-
-        entity_height = col.bounds.extents.y;
-
-        cast_sizes[(int)GameSide.LEFT]   = new Vector2(CAST_THICKNESS, size.y);
-        cast_sizes[(int)GameSide.RIGHT]  = new Vector2(CAST_THICKNESS, size.y);
-        cast_sizes[(int)GameSide.TOP]    = new Vector2(size.x, CAST_THICKNESS);
-        cast_sizes[(int)GameSide.BOTTOM] = new Vector2(size.x, CAST_THICKNESS);
     }
 
-    public void raycast() {
-        for (int i = 0; i < CAST_DIRECTIONS.Length; i++) {
-            Vector2 dir = CAST_DIRECTIONS[i];
-            Vector2 origin = (Vector2)transform.position + dir * entity_height;
-
-            int count = Physics2D.BoxCast(
-                origin,
-                cast_sizes[i],
-                0f,
-                dir,
-                contact_filter,
-                hit_buffer,
-                CAST_DISTANCE
-            );
-
-            distance[i] = float.MaxValue;
-
-            if (count == 0) {
-                onClear?.Invoke((GameSide)i);
-                continue;
-            }
-
-            for (int j = 0; j < count; j++) {
-                float d = hit_buffer[j].distance;
-                
-                if (d < distance[i]) {
-                    distance[i] = d;
-                }
-
-                onHit?.Invoke((GameSide)i, hit_buffer[j].collider);
+    private int get_side(Vector2 normal)
+    {
+        int best = 0;
+        float best_dot = float.MinValue;
+        for (int i = 0; i < SIDE_DIRECTIONS.Length; i++)
+        {
+            float dot = Vector2.Dot(SIDE_DIRECTIONS[i], normal);
+            if (dot > best_dot)
+            {
+                best_dot = dot;
+                best = i;
             }
         }
+        return best;
     }
 
-    void FixedUpdate() {
-        raycast();
+    public void check_contacts()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            is_touching[i] = false;
+            hit_per_side[i] = null;
+        }
+        is_grounded = false;
+
+        int count = box_collider.GetContacts(contact_filter, contact_buffer);
+
+        for (int i = 0; i < count; i++)
+        {
+            ContactPoint2D contact = contact_buffer[i];
+
+            int side = get_side(-contact.normal);
+            is_touching[side] = true;
+            hit_per_side[side] = contact.collider;
+
+            // grounded = any contact pushing us upward
+            if (contact.normal.y > GROUND_NORMAL_Y)
+            {
+                is_grounded = true;
+            }
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (is_touching[i])
+            {
+                onHit?.Invoke((GameSide)i, hit_per_side[i]);
+            }
+            else
+            {
+                onClear?.Invoke((GameSide)i);
+            }
+        }
+
+        draw_debug();
+    }
+
+    private void draw_debug()
+    {
+        Vector2 center = box_collider.bounds.center;
+        Vector2 half = box_collider.bounds.extents;
+
+        Vector2 top_left = center + new Vector2(-half.x, half.y);
+        Vector2 top_right = center + new Vector2(half.x, half.y);
+        Vector2 bottom_left = center + new Vector2(-half.x, -half.y);
+        Vector2 bottom_right = center + new Vector2(half.x, -half.y);
+
+        Debug.DrawLine(bottom_left, top_left, is_touching[(int)GameSide.LEFT] ? Color.blue : Color.green);
+        Debug.DrawLine(top_left, top_right, is_touching[(int)GameSide.TOP] ? Color.blue : Color.green);
+        Debug.DrawLine(top_right, bottom_right, is_touching[(int)GameSide.RIGHT] ? Color.blue : Color.green);
+        Debug.DrawLine(bottom_right, bottom_left, is_touching[(int)GameSide.BOTTOM] ? Color.blue : Color.green);
+    }
+
+    void FixedUpdate()
+    {
+        check_contacts();
     }
 };

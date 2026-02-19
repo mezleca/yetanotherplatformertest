@@ -5,12 +5,14 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(Collider2D))]
 
-public class GameEntity : MonoBehaviour {
+public class GameEntity : MonoBehaviour
+{
     public EntityMovement movement;
     public EntityAction input_action;
     public EntitySensor sensor;
 
-    void Start() {
+    void Start()
+    {
         input_action = new EntityAction();
         movement = gameObject.AddComponent<EntityMovement>();
         sensor = gameObject.AddComponent<EntitySensor>();
@@ -18,26 +20,26 @@ public class GameEntity : MonoBehaviour {
     }
 
     // input events
-    public void walk(InputAction.CallbackContext ctx) {
+    public void walk(InputAction.CallbackContext ctx)
+    {
         movement.set_direction(ctx.ReadValue<Vector2>());
         input_action.set(EntityActions.WALK, ctx.performed);
     }
 
-    public void jump(InputAction.CallbackContext ctx) {
-        if (ctx.performed && movement.can_jump) {
-            movement.jump();
-        }
+    public void jump(InputAction.CallbackContext ctx)
+    {
+        movement.jump();
         input_action.set(EntityActions.JUMP, ctx.performed);
     }
 
-    public void sprint(InputAction.CallbackContext ctx) {
-        if (ctx.performed && !movement.can_jump) {
-            movement.sprint(ctx.performed);
-        }
+    public void sprint(InputAction.CallbackContext ctx)
+    {
+        movement.sprint(ctx.performed);
         input_action.set(EntityActions.SPRINT, ctx.performed);
     }
 
-    public void slide(InputAction.CallbackContext ctx) {
+    public void slide(InputAction.CallbackContext ctx)
+    {
         movement.slide(ctx.performed);
         input_action.set(EntityActions.SLIDE, ctx.performed);
     }

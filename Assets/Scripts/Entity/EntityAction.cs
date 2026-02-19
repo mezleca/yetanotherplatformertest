@@ -10,31 +10,52 @@ public enum EntityActions : int {
     SLIDE = 1 << 4
 };
 
-public class EntityAction {
+public class EntityAction
+{
     public EntityActions flags = EntityActions.NONE;
     public event Action<EntityActions, bool> onAction;
 
-    public void set(EntityActions action, bool _add) {
-        if (_add) {
+    public bool has(EntityActions action, bool done = false)
+    {
+        bool result = (flags & action) != 0;
+
+        if (done && result)
+        {
+            flags &= ~action;
+        }
+
+        return result;
+    }
+
+    public void set(EntityActions action, bool _add)
+    {
+        if (_add)
+        {
             add(action);
-        } else {
+        }
+        else
+        {
             remove(action);
         }
     }
 
-    public void add(EntityActions action) {
+    public void add(EntityActions action)
+    {
         bool has_action = (flags & action) != 0;
 
-        if (!has_action) {
+        if (!has_action)
+        {
             flags |= action;
             onAction?.Invoke(action, true);
         }
     }
 
-    public void remove(EntityActions action) {
+    public void remove(EntityActions action)
+    {
         bool has_action = (flags & action) != 0;
 
-        if (has_action) {
+        if (has_action)
+        {
             flags &= ~action;
             onAction?.Invoke(action, false);
         }

@@ -3,15 +3,16 @@ using UnityEngine;
 public class Camera2 : MonoBehaviour
 {
     [SerializeField] public Transform player_transform;
-    [SerializeField] public float lerp_t = 100.0f; 
+    [SerializeField] public float lerp_t = 100.0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() { }
 
     // Update is called once per frame
-    void Update() {
-        if (player_transform == null) {
-            Debug.Log("how");
+    void Update()
+    {
+        if (player_transform == null)
+        {
             return;
         }
 
@@ -20,4 +21,4 @@ public class Camera2 : MonoBehaviour
 
         transform.position = Vector3.Lerp(transform.position, target_pos, lerp_t * Time.deltaTime);
     }
-}
+};
