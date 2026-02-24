@@ -94,24 +94,6 @@ public class EntitySensor : MonoBehaviour
                 onClear?.Invoke((GameSide)i);
             }
         }
-
-        draw_debug();
-    }
-
-    private void draw_debug()
-    {
-        Vector2 center = box_collider.bounds.center;
-        Vector2 half = box_collider.bounds.extents;
-
-        Vector2 top_left = center + new Vector2(-half.x, half.y);
-        Vector2 top_right = center + new Vector2(half.x, half.y);
-        Vector2 bottom_left = center + new Vector2(-half.x, -half.y);
-        Vector2 bottom_right = center + new Vector2(half.x, -half.y);
-
-        Debug.DrawLine(bottom_left, top_left, is_touching[(int)GameSide.LEFT] ? Color.blue : Color.green);
-        Debug.DrawLine(top_left, top_right, is_touching[(int)GameSide.TOP] ? Color.blue : Color.green);
-        Debug.DrawLine(top_right, bottom_right, is_touching[(int)GameSide.RIGHT] ? Color.blue : Color.green);
-        Debug.DrawLine(bottom_right, bottom_left, is_touching[(int)GameSide.BOTTOM] ? Color.blue : Color.green);
     }
 
     void FixedUpdate()

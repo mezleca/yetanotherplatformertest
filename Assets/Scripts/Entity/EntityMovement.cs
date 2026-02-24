@@ -1,18 +1,10 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class EntityMovement : MonoBehaviour
 {
-    private Dictionary<GameSide, bool> blocked_sides = new() {
-        { GameSide.LEFT, false },
-        { GameSide.TOP, false },
-        { GameSide.RIGHT, false },
-        { GameSide.BOTTOM, false },
-    };
-
-    public float jump_force = 5.0f, walk_speed = 5.0f;
+    public float jump_force = 10.0f, walk_speed = 10.0f;
     public bool on_walk = false;
     public bool on_sprint = false;
     public bool on_slide = false;
@@ -69,7 +61,7 @@ public class EntityMovement : MonoBehaviour
     {
         if (holding && sensor.is_grounded)
         {
-            velocity_multiplier = Math.Min(velocity_multiplier + sprint_vel, 3.0f);
+            velocity_multiplier = Math.Min(velocity_multiplier + sprint_vel, 2.0f);
             on_sprint = true;
         }
         else
@@ -102,7 +94,7 @@ public class EntityMovement : MonoBehaviour
             if (is_holding_jump && !sensor.is_grounded && sensor.is_touching[(int)side])
             {
                 float dir = side == GameSide.RIGHT ? -1.0f : 1.0f;
-                Vector2 force = new Vector2(wall_jump_vel * dir, wall_jump_vel);
+                Vector2 force = new(wall_jump_vel * dir, wall_jump_vel);
                 rb.AddForce(force, ForceMode2D.Impulse);
             }
         }
@@ -111,14 +103,19 @@ public class EntityMovement : MonoBehaviour
     void FixedUpdate()
     {
         float target_x = walk_speed * velocity_multiplier * -direction.x;
+        float target_y = rb.linearVelocityY; 
+
+        // TODO: clamp based on ent attributes
+        target_x = Mathf.Clamp(target_x, -30.0f, 30.0f);
+        target_y = Mathf.Clamp(target_y, -30.0f, 30.0f);
 
         // who cares about gravity
         if (!sensor.is_grounded)
         {
-            rb.linearVelocity = new Vector2(Mathf.Lerp(rb.linearVelocityX, target_x, 0.10f), rb.linearVelocityY);
+            rb.linearVelocity = new Vector2(Mathf.Lerp(rb.linearVelocityX, target_x, 0.10f), target_y);
             return;
         }
 
-        rb.linearVelocity = new Vector2(target_x, rb.linearVelocityY);
+        rb.linearVelocity = new Vector2(target_x, target_y);
     }
 };
