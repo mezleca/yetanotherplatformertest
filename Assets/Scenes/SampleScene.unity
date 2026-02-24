@@ -629,7 +629,7 @@ GameObject:
   - component: {fileID: 1633859583}
   - component: {fileID: 1633859582}
   - component: {fileID: 1633859581}
-  - component: {fileID: 1633859580}
+  - component: {fileID: 1633859585}
   m_Layer: 0
   m_Name: camera
   m_TagString: MainCamera
@@ -637,20 +637,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1633859580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1633859579}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a588627515e1cb48887379c13d797d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Camera2
-  player_transform: {fileID: 1740790342}
-  lerp_t: 100
 --- !u!114 &1633859581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -737,7 +723,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 17.072107
   m_Depth: 0
   m_CullingMask:
@@ -769,6 +755,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1633859585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1633859579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6d706e4a97dc2b33b789641487b6458, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Camera2
+  camera: {fileID: 0}
 --- !u!1 &1700972696
 GameObject:
   m_ObjectHideFlags: 0
@@ -917,10 +916,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1740790342}
   - component: {fileID: 1740790341}
-  - component: {fileID: 1740790340}
-  - component: {fileID: 1740790345}
-  - component: {fileID: 1740790343}
   - component: {fileID: 1740790344}
+  - component: {fileID: 1740790340}
+  - component: {fileID: 1740790343}
   m_Layer: 6
   m_Name: player
   m_TagString: Untagged
@@ -1084,105 +1082,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1740790339}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Script: {fileID: 11500000, guid: 00f2f9432496f470598ee6da0190c6f6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
-  m_Actions: {fileID: -944628639613478452, guid: d27db704107a9f1a48300777b5b780ae, type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1740790345}
-        m_TargetAssemblyTypeName: GameEntity, Assembly-CSharp
-        m_MethodName: walk
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: f2c9f485-6802-4c62-92d8-28cd6f7a9067
-    m_ActionName: 'Player/Movement[/Keyboard/w,/Keyboard/s,/Keyboard/d,/Keyboard/a]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1740790345}
-        m_TargetAssemblyTypeName: GameEntity, Assembly-CSharp
-        m_MethodName: slide
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 13d41f7d-0c58-4bb3-ac0f-3e3edf3e596a
-    m_ActionName: 'Player/Slide[/Keyboard/c]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1740790345}
-        m_TargetAssemblyTypeName: GameEntity, Assembly-CSharp
-        m_MethodName: sprint
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: b7840ba3-c544-40a9-aed8-13772b22eccf
-    m_ActionName: 'Player/Sprint[/Keyboard/c]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1740790345}
-        m_TargetAssemblyTypeName: GameEntity, Assembly-CSharp
-        m_MethodName: jump
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 7d9ec228-54ee-41f6-a1c8-f2535df89e0f
-    m_ActionName: 'Player/Jump[/Keyboard/space]'
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
---- !u!114 &1740790345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1740790339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 365796e7e183c5ad494346e8ae49096e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameEntity
-  movement: {fileID: 0}
-  sensor: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::Player
+  camera: {fileID: 1633859585}
 --- !u!1 &1787145063
 GameObject:
   m_ObjectHideFlags: 0
