@@ -14,7 +14,7 @@ public class EntitySensor : MonoBehaviour
 {
     private BoxCollider2D box_collider;
     private ContactPoint2D[] contact_buffer = new ContactPoint2D[16];
-    private ContactFilter2D contact_filter;
+    private ContactFilter2D contact_filter = new();
     private Collider2D[] hit_per_side = new Collider2D[4];
 
     private readonly Vector2[] SIDE_DIRECTIONS = {
@@ -35,10 +35,7 @@ public class EntitySensor : MonoBehaviour
     void Awake()
     {
         box_collider = GetComponent<BoxCollider2D>();
-
-        int layer_mask = LayerMask.GetMask("Floor") | LayerMask.GetMask("Wall");
-        contact_filter = new ContactFilter2D();
-        contact_filter.SetLayerMask(layer_mask);
+        contact_filter.SetLayerMask(LayerMask.GetMask("Floor") | LayerMask.GetMask("Wall"));
     }
 
     private int get_side(Vector2 normal)

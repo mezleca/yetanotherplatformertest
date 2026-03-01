@@ -4,33 +4,38 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class EntityMovement : MonoBehaviour
 {
-    public float jump_force = 10.0f, walk_speed = 10.0f;
     public bool on_walk = false;
     public bool on_sprint = false;
     public bool on_slide = false;
 
+    public EntityAttributes attributes;
     public Rigidbody2D rb;
-    public Vector2 direction; // to move horizontally and maybe upwards (stairs or something like that) in the future
+    public Vector2 direction;
 
     public float velocity_multiplier = 1.0f;
-    public float wall_jump_vel = 15.0f;
     public float sprint_vel = 1.5f;
     public float slide_vel = 1.0f;
 
     private EntitySensor sensor;
-    private EntityAction input_action;
-    private GameUtils utils;
 
-    public void setup(EntitySensor s, EntityAction a)
+    // movement events
+    public Action<GameSide> on_wall_hit;
+
+    public void setup(EntitySensor s)
     {
         sensor = s;
-        input_action = a;
-        sensor.onHit += on_hit;
+
+        if (sensor != null)
+        {
+            sensor.onHit -= on_hit;
+            sensor.onHit += on_hit;
+        }
     }
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        attributes ??= new EntityAttributes();
     }
 
     void OnDestroy()
@@ -51,15 +56,16 @@ public class EntityMovement : MonoBehaviour
 
     public void jump(float y = 0.0f)
     {
-        if (sensor.is_grounded)
+        if (sensor.is_grounded && attributes.stamina > 0)
         {
-            rb.AddForceY(y > 0.0f ? y : jump_force, ForceMode2D.Impulse);
+            rb.AddForceY(y > 0.0f ? y : attributes.jump_force, ForceMode2D.Impulse);
+            attributes.stamina -= 2.0f;
         }
     }
 
     public void sprint(bool holding)
     {
-        if (holding && sensor.is_grounded)
+        if (holding && attributes.stamina > 2.5f)
         {
             velocity_multiplier = Math.Min(velocity_multiplier + sprint_vel, 2.0f);
             on_sprint = true;
@@ -85,31 +91,37 @@ public class EntityMovement : MonoBehaviour
         }
     }
 
-    void on_hit(GameSide side, Collider2D collider)
+    private void on_hit(GameSide side, Collider2D collider)
     {
         if (side == GameSide.RIGHT || side == GameSide.LEFT)
         {
-            bool is_holding_jump = input_action.has(EntityActions.JUMP, true);
-
-            if (is_holding_jump && !sensor.is_grounded && sensor.is_touching[(int)side])
-            {
-                float dir = side == GameSide.RIGHT ? -1.0f : 1.0f;
-                Vector2 force = new(wall_jump_vel * dir, wall_jump_vel);
-                rb.AddForce(force, ForceMode2D.Impulse);
-            }
+            on_wall_hit?.Invoke(side);
         }
+    }
+
+    void Update()
+    {
+        if (on_sprint)
+        {
+            attributes.stamina -= 2.0f * Time.deltaTime;
+        } 
+        else
+        {
+            attributes.stamina += 5.0f * Time.deltaTime;
+        }
+
+        attributes.stamina = Mathf.Clamp(attributes.stamina, 0.0f, attributes.max_stamina);
     }
 
     void FixedUpdate()
     {
-        float target_x = walk_speed * velocity_multiplier * -direction.x;
-        float target_y = rb.linearVelocityY; 
+        float target_x = attributes.max_speed * velocity_multiplier * -direction.x;
+        float target_y = rb.linearVelocityY;
 
         // TODO: clamp based on ent attributes
-        target_x = Mathf.Clamp(target_x, -30.0f, 30.0f);
-        target_y = Mathf.Clamp(target_y, -30.0f, 30.0f);
+        target_x = Mathf.Clamp(target_x, -15.0f, 15.0f);
+        target_y = Mathf.Clamp(target_y, -50.0f, 15.0f);
 
-        // who cares about gravity
         if (!sensor.is_grounded)
         {
             rb.linearVelocity = new Vector2(Mathf.Lerp(rb.linearVelocityX, target_x, 0.10f), target_y);

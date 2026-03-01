@@ -5,10 +5,11 @@ public class CameraController : MonoBehaviour
     private struct CameraData
     {
         public GameObject target;
+        public Vector3 offset;
         public float duration, fov;
     }
 
-    public Camera camera;
+    public new Camera camera;
     private CameraData data;
     private readonly float transition_speed = 10.0f;
 
@@ -21,19 +22,18 @@ public class CameraController : MonoBehaviour
     {
         if (!data.target)
         {
-            Debug.LogWarning("camera: no target...");
             return;
         }
 
         float current_fov = get_fov();
-        Vector3 current = transform.position, target = data.target.transform.position;
+        Vector3 current = transform.position, target = data.target.transform.position, offset = data.offset;
         
         if (current != target)
         {
             transform.position = new Vector3(
-                Mathf.Lerp(current.x, target.x, transition_speed * Time.deltaTime),
-                Mathf.Lerp(current.y, target.y, transition_speed * Time.deltaTime),
-                Mathf.Lerp(current.z, target.z - 5, transition_speed * Time.deltaTime)
+                Mathf.Lerp(current.x, target.x + offset.x, transition_speed * Time.deltaTime),
+                Mathf.Lerp(current.y, target.y + offset.y, transition_speed * Time.deltaTime),
+                Mathf.Lerp(current.z, target.z + offset.z - 5, transition_speed * Time.deltaTime)
             );
         }
 
@@ -47,9 +47,10 @@ public class CameraController : MonoBehaviour
 
     private float get_fov() => camera.fieldOfView;
 
-    public void set_focus(GameObject target, float fov = 120.0f, float duration = 0.0f)
+    public void set_focus(GameObject target, float fov = 120.0f, Vector3 offset = new(), float duration = 0.0f)
     {
         data.target = target;
+        data.offset = offset;
         data.duration = duration;
         data.fov = fov;
     }
