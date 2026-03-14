@@ -2,9 +2,12 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class EntityMovement : MonoBehaviour
 {
     public bool on_walk = false;
+    public bool on_jump = false;
     public bool on_sprint = false;
     public bool on_slide = false;
 
@@ -17,6 +20,7 @@ public class EntityMovement : MonoBehaviour
     public float slide_vel = 1.0f;
 
     private EntitySensor sensor;
+    private SpriteRenderer sprite;
 
     // movement events
     public Action<GameSide> on_wall_hit;
@@ -35,6 +39,7 @@ public class EntityMovement : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        sprite = GetComponent<SpriteRenderer>();
         attributes ??= new EntityAttributes();
     }
 
@@ -48,47 +53,48 @@ public class EntityMovement : MonoBehaviour
         sensor.onHit -= on_hit;
     }
 
+    public Vector3 velocity => rb.linearVelocity;
+    public bool on_ground => sensor.is_grounded;
+
     public void set_direction(Vector2 dir)
     {
         direction = dir;
+        if (direction.x != 0) sprite.flipX = direction.x == 1;
         on_walk = Mathf.Abs(direction.x) > 0;
     }
 
     public void jump(float y = 0.0f)
     {
-        if (sensor.is_grounded && attributes.stamina > 0)
+        bool can_jump = sensor.is_grounded && !on_jump && attributes.stamina > 0;
+
+        if (can_jump)
         {
             rb.AddForceY(y > 0.0f ? y : attributes.jump_force, ForceMode2D.Impulse);
-            attributes.stamina -= 2.0f;
+            attributes.stamina -= 3.0f;
+            on_jump = true;
         }
     }
 
     public void sprint(bool holding)
     {
-        if (holding && attributes.stamina > 2.5f)
-        {
-            velocity_multiplier = Math.Min(velocity_multiplier + sprint_vel, 2.0f);
-            on_sprint = true;
-        }
-        else
-        {
-            velocity_multiplier = Math.Max(velocity_multiplier - sprint_vel, 1.0f);
-            on_sprint = false;
-        }
+        bool can_sprint = on_walk && holding && attributes.stamina > 2.5f;
+
+        velocity_multiplier = can_sprint ?
+            Math.Min(velocity_multiplier + sprint_vel, 2.0f) :
+            Math.Max(velocity_multiplier - sprint_vel, 1.0f);
+
+        on_sprint = can_sprint;
     }
 
     public void slide(bool holding)
     {
-        if (holding && on_walk)
-        {
-            velocity_multiplier = Math.Min(velocity_multiplier + slide_vel, 3.0f);
-            on_slide = true;
-        }
-        else
-        {
-            velocity_multiplier = Math.Max(velocity_multiplier - slide_vel, 1.0f);
-            on_slide = false;
-        }
+        bool can_slide = holding && on_walk;
+
+        velocity_multiplier = can_slide ?
+            Math.Min(velocity_multiplier + slide_vel, 3.0f) :
+            Math.Max(velocity_multiplier - slide_vel, 1.0f);
+
+        on_slide = can_slide;
     }
 
     private void on_hit(GameSide side, Collider2D collider)
@@ -97,14 +103,20 @@ public class EntityMovement : MonoBehaviour
         {
             on_wall_hit?.Invoke(side);
         }
+
+        if (side == GameSide.BOTTOM)
+        {
+            if (on_ground && on_jump) on_jump = false;
+        }
     }
 
     void Update()
     {
+        // update stamina
         if (on_sprint)
         {
             attributes.stamina -= 2.0f * Time.deltaTime;
-        } 
+        }
         else
         {
             attributes.stamina += 5.0f * Time.deltaTime;
@@ -115,7 +127,7 @@ public class EntityMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        float target_x = attributes.max_speed * velocity_multiplier * -direction.x;
+        float target_x = attributes.max_x_speed * velocity_multiplier * -direction.x;
         float target_y = rb.linearVelocityY;
 
         // TODO: clamp based on ent attributes

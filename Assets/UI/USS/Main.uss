@@ -1,0 +1,81 @@
+:root {
+}
+
+.panel {
+    -unity-background-image-tint-color: rgb(36, 36, 36);
+    background-color: rgb(31, 31, 31);
+}
+
+.unity-button {
+    background-color: rgb(48, 48, 48);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    color: rgb(255, 255, 255);
+    -unity-font-definition: url("project://database/Assets/TextMesh%20Pro/Fonts/LiberationSans.ttf?fileID=12800000&guid=e3265ab4bf004d28a9537516768c1c75&type=3#LiberationSans");
+    font-size: 16px;
+    -unity-font-style: bold;
+    border-left-color: rgb(84, 84, 84);
+    border-right-color: rgb(84, 84, 84);
+    border-top-color: rgb(84, 84, 84);
+    border-bottom-color: rgb(84, 84, 84);
+    padding-top: 16px;
+    padding-right: 32px;
+    padding-bottom: 16px;
+    padding-left: 32px;
+}
+
+.unity-button {
+    width: 25%;
+    min-width: auto;
+    min-height: auto;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.unity-button:hover {
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+}
+
+#pause-screen {
+    background-color: rgba(33, 33, 33, 0.8);
+}
+
+.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transition-property: opacity;
+    transition-duration: 0.5s;
+}
+
+#health-box, #stamina-box {
+    width: 250px;
+    height: 25px;
+    border-radius: 6px;
+    background-color: rgb(33, 33, 33);
+}
+
+#health-fill, #stamina-fill {
+    height: 100%;
+    width: 25%;
+    transition-property: width;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+}
+
+#health-fill {
+    background-color: red;
+}
+
+#stamina-fill {
+    background-color: white;
+}

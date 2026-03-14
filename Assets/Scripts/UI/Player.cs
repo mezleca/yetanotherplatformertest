@@ -1,30 +1,26 @@
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
+[RequireComponent(typeof(UIDocument))]
 public class PlayerUI : MonoBehaviour {
+    public VisualElement ui;
     public Player player;
 
     // player ui
-    public GameObject ui_stamina_bar;
-    private Image ui_stamina_image;
-    public GameObject ui_health_bar;
-    private Image ui_health_image;
+    private VisualElement stamina_fill;
+    private VisualElement health_fill;
 
     void Awake()
     {
+        ui = GetComponent<UIDocument>().rootVisualElement;
+
+        // setup ui elements
+        health_fill = ui.Q<VisualElement>("health-fill");
+        stamina_fill = ui.Q<VisualElement>("stamina-fill");
+
         if (player == null)
         {
             player = FindFirstObjectByType<Player>();
-        }
-
-        if (ui_stamina_bar && !ui_stamina_image)
-        {  
-            ui_stamina_image = ui_stamina_bar.GetComponent<Image>();  
-        }
-
-        if (ui_health_bar && !ui_health_image)
-        {  
-            ui_health_image = ui_stamina_bar.GetComponent<Image>();  
         }
     }
 
@@ -35,7 +31,7 @@ public class PlayerUI : MonoBehaviour {
         if (player != null)
         {
             EntityAttributes attributes = player.ent.movement.attributes;
-            ui_stamina_image.fillAmount = attributes.stamina / attributes.max_stamina * 100 / 100;
+            stamina_fill.style.width = new StyleLength(Length.Percent(attributes.stamina / attributes.max_stamina * 100.0f));
         }
     }
 };

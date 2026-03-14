@@ -5,12 +5,12 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     public GameEntity ent;
-    private PlayerInput input;
-    private PauseUI pause_ui;
+    
+    private GameCore core = GameCore.Instance;
     private bool callbacks_bound = false;
-    private readonly float default_fov = 120.0f;
+    private readonly float default_fov = 90.0f;
     private Vector3 camera_offset = new(0, 0, 0);
-    [SerializeField] public new CameraController camera;
+    private new CameraController camera;
 
     private void Awake()
     {
@@ -19,24 +19,22 @@ public class Player : MonoBehaviour
 
     private void bind_callbacks()
     {
-        if (callbacks_bound || input == null || ent == null)
+        if (callbacks_bound || core == null || ent == null)
         {
             return;
         }
 
-        input.Player.Pause.performed += on_pause;
+        core.input.Player.Movement.performed += do_walk;
+        core.input.Player.Movement.canceled += do_walk;
 
-        input.Player.Movement.performed += do_walk;
-        input.Player.Movement.canceled += do_walk;
+        core.input.Player.Jump.performed += do_jump;
+        core.input.Player.Jump.canceled += do_jump;
 
-        input.Player.Jump.performed += do_jump;
-        input.Player.Jump.canceled += do_jump;
+        core.input.Player.Sprint.performed += do_sprint;
+        core.input.Player.Sprint.canceled += do_sprint;
 
-        input.Player.Sprint.performed += do_sprint;
-        input.Player.Sprint.canceled += do_sprint;
-
-        input.Player.Slide.performed += do_slide;
-        input.Player.Slide.canceled += do_slide;
+        core.input.Player.Slide.performed += do_slide;
+        core.input.Player.Slide.canceled += do_slide;
 
         ent.movement.on_wall_hit += on_wall_hit;
 
@@ -45,24 +43,22 @@ public class Player : MonoBehaviour
 
     private void unbind_callbacks()
     {
-        if (!callbacks_bound || input == null || ent == null)
+        if (!callbacks_bound || core == null || ent == null)
         {
             return;
         }
 
-        input.Player.Pause.performed -= on_pause;
+        core.input.Player.Movement.performed -= do_walk;
+        core.input.Player.Movement.canceled -= do_walk;
 
-        input.Player.Movement.performed -= do_walk;
-        input.Player.Movement.canceled -= do_walk;
+        core.input.Player.Jump.performed -= do_jump;
+        core.input.Player.Jump.canceled -= do_jump;
 
-        input.Player.Jump.performed -= do_jump;
-        input.Player.Jump.canceled -= do_jump;
+        core.input.Player.Sprint.performed -= do_sprint;
+        core.input.Player.Sprint.canceled -= do_sprint;
 
-        input.Player.Sprint.performed -= do_sprint;
-        input.Player.Sprint.canceled -= do_sprint;
-
-        input.Player.Slide.performed -= do_slide;
-        input.Player.Slide.canceled -= do_slide;
+        core.input.Player.Slide.performed -= do_slide;
+        core.input.Player.Slide.canceled -= do_slide;
 
         ent.movement.on_wall_hit -= on_wall_hit;
 
@@ -71,8 +67,6 @@ public class Player : MonoBehaviour
 
     private void ensure_initialized()
     {
-        input ??= new PlayerInput();
-        
         if (ent == null)
         {
             ent = gameObject.AddComponent<GameEntity>();
@@ -80,44 +74,25 @@ public class Player : MonoBehaviour
 
         if (camera == null)
         {
-            camera = FindFirstObjectByType<CameraController>();
+            camera = Camera.main.GetComponent<CameraController>();
         }
-
-        if (pause_ui == null)
-        {
-            pause_ui = FindFirstObjectByType<PauseUI>();
-        }
-
+        
         bind_callbacks();
     }
 
     void Start()
     {
-        camera.set_focus(gameObject, default_fov, camera_offset);  
+        camera.set_focus(gameObject, default_fov, camera_offset);
     }
 
     private void OnEnable()
     {
         ensure_initialized();
-        input.Enable();
-    }
-
-    private void OnDisable()
-    {
-        input?.Disable();
     }
 
     private void OnDestroy()
     {
         unbind_callbacks();
-        input?.Dispose();
-        input = null;
-    }
-
-    // handle ui stuff
-    private void on_pause(InputAction.CallbackContext ctx)
-    {
-        pause_ui.toggle_pause();
     }
 
     // handle movement stuff
@@ -134,7 +109,7 @@ public class Player : MonoBehaviour
     private void do_sprint(InputAction.CallbackContext ctx)
     {
         float target_fov = default_fov;
-        
+
         if (ctx.performed)
         {
             target_fov += 10;
@@ -155,12 +130,12 @@ public class Player : MonoBehaviour
         bool has_stamina = ent.movement.attributes.stamina > 0;
 
         // TOFIX
-        InputAction jump_action = input.FindAction("Jump");
-        
+        InputAction jump_action = core.input.FindAction("Jump");
+
         if (has_stamina && jump_action.IsPressed() && !ent.sensor.is_grounded && ent.sensor.is_touching[(int)side])
         {
             // TOFIX
-            Vector2 move_pos = input.FindAction("Movement").ReadValue<Vector2>();
+            Vector2 move_pos = core.input.FindAction("Movement").ReadValue<Vector2>();
             Vector2 force = new(0, ent.movement.attributes.jump_force);
 
             // impulse player to the opposite direction
@@ -169,7 +144,7 @@ public class Player : MonoBehaviour
             if (move_pos.x == -dir)
             {
                 force.x = ent.movement.attributes.push_force * dir;
-            } 
+            }
 
             ent.movement.rb.AddForce(force, ForceMode2D.Impulse);
         }

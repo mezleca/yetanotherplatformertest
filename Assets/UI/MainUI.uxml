@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/Main.uss?fileID=7433441132597879392&amp;guid=38283e4fbcdc2b7cbbfb6ef844b03744&amp;type=3#Main"/>
+    <ui:VisualElement name="Panel" class="panel" style="flex-grow: 1;">
+        <ui:VisualElement name="container" style="flex-grow: 1; align-items: center; justify-content: center; color: rgb(255, 0, 0);">
+            <ui:Button text="Play" name="play"/>
+            <ui:Button text="Settings&#10;" name="settings"/>
+            <ui:Button text="Exit&#10;" name="exit"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
