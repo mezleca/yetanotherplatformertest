@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(UIDocument))]
@@ -77,13 +76,9 @@ public class PauseUI : MonoBehaviour
     {
         Time.timeScale = 1.0f;
         
-        yield return core.LoadMainScenes();
-        
-        yield return SceneManager.UnloadSceneAsync("Player");
-        yield return SceneManager.UnloadSceneAsync("PlayerUI");
-        yield return SceneManager.UnloadSceneAsync(core.level_loader.current_scene);
-
-        core.level_loader.current_scene = "";
+        yield return core.LoadMainMenu();
+        yield return core.UnloadPlayer();
+        yield return core.UnloadCurrentLevel();
     }
 
     public void ui_pause()

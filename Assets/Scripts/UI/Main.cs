@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(UIDocument))]
@@ -10,7 +9,7 @@ public class Main : MonoBehaviour
     public VisualElement ui;
 
     // stuff
-    private GameCore core = GameCore.Instance;
+    private readonly GameCore core = GameCore.Instance;
 
     // ui buttons
     private Button btn_play;
@@ -41,15 +40,11 @@ public class Main : MonoBehaviour
 
     IEnumerator onPlayAsync()
     {
-        // load first level / player stuff
-        yield return core.level_loader.LoadScene("Level 1");
-        yield return core.level_loader.LoadScene("Player", false);
-        yield return core.level_loader.LoadScene("PlayerUI", false);
-
-        Debug.Log("current scene: " + core.level_loader.current_scene);
-
-        // kms
-        yield return SceneManager.UnloadSceneAsync("MainMenu");
+        // load level selector
+        yield return core.LoadLevelStart();
+        
+        // unload main menu
+        yield return core.UnloadCurrentLevel();
     }
 
     void onPlay()
