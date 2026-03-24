@@ -1,7 +1,8 @@
 :root {
 }
 
-.panel, #panel {
+.panel,
+#panel {
     -unity-background-image-tint-color: rgb(36, 36, 36);
     background-color: rgb(31, 31, 31);
 }
@@ -53,10 +54,8 @@
     transition-duration: 0.5s;
 }
 
-/* LEVEL START */
-
 #level {
-    flex-grow: 1; 
+    flex-grow: 1;
     justify-content: space-evenly;
     align-items: center;
     width: 350px;
@@ -65,6 +64,10 @@
     transition-duration: 0.3s;
     border-color: rgb(62, 62, 62);
     border-width: 1px;
+}
+
+#level > .unity-scroll-view__content-container {
+    flex-direction: row;
 }
 
 #level:hover {
@@ -86,7 +89,7 @@
 }
 
 #level-load:hover {
-    border-color: rgba(92, 92, 92, 1);
+    border-color: rgb(92, 92, 92);
 }
 
 #action-menu > .custom-btn {
@@ -110,23 +113,23 @@
 }
 
 .custom-btn:hover {
-    border-color: rgba(120, 120, 120, 1);
+    border-color: rgb(120, 120, 120);
 }
-
-/* PLAYER UI */
 
 #pause-screen {
     background-color: rgba(33, 33, 33, 0.8);
 }
 
-#health-box, #stamina-box {
+#health-box,
+#stamina-box {
     width: 250px;
     height: 25px;
     border-radius: 6px;
     background-color: rgb(33, 33, 33);
 }
 
-#health-fill, #stamina-fill {
+#health-fill,
+#stamina-fill {
     height: 100%;
     width: 25%;
     transition-property: width;
@@ -142,8 +145,6 @@
     background-color: white;
 }
 
-/* ICONS */
-
 #icon {
     width: 16px;
     height: 16px;
@@ -152,5 +153,5 @@
 .back-icon {
     background-color: rgba(0, 0, 0, 0);
     border-width: 0;
-    background-image: url("project://database/Assets/UI/Icons/ArrowLeft.png");
+    background-image: url("project://database/Assets/UI/Icons/ArrowLeft.png?fileID=1218268146595743105&guid=31012f0d5471ad7758c729c86de13418&type=3#ArrowLeft_0");
 }

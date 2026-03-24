@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -32,8 +33,7 @@ public class GameCore : MonoBehaviour {
 
     void OnDestroy()
     {
-        // TODO: rest
-
+        Instance = null;
         input?.Dispose();
         input = null;
     }
@@ -45,88 +45,102 @@ public class GameCore : MonoBehaviour {
 
     private void Start()
     {
-        StartCoroutine(LoadMainMenu());
+        _ = LoadMainMenu();
     }
 
-    public IEnumerator LoadMainMenu()
+    public async Task LoadMainMenu()
     {
         if (!utils.isSceneLoaded("MainMenu")) {
-            yield return SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);
+            await SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);
         }
     }
 
-    public IEnumerator LoadLevelStart()
+    public async Task LoadLevelStart()
     {
-        if (!utils.isSceneLoaded("LevelStart")) {
-            yield return SceneManager.LoadSceneAsync("LevelStart", LoadSceneMode.Additive);
+        if (!utils.isSceneLoaded("Start")) {
+            await SceneManager.LoadSceneAsync("Start", LoadSceneMode.Additive);
+
+            LoadPlayer();
+            UnloadMainMenu();
+            UnloadLevelSelector();
         }
     }
 
-    public IEnumerator LoadPlayer()
+    public async Task LoadLevelSelector() 
+    {
+        if (!utils.isSceneLoaded("LevelSelector"))
+        {
+            await SceneManager.LoadSceneAsync("LevelSelector", LoadSceneMode.Additive);
+            UnloadMainMenu();
+        }
+    }
+
+    public void LoadPlayer()
     {
         if (!utils.isSceneLoaded("Player")) {
-            yield return SceneManager.LoadSceneAsync("Player", LoadSceneMode.Additive);
+            SceneManager.LoadSceneAsync("Player", LoadSceneMode.Additive);
         }
 
         if (!utils.isSceneLoaded("PlayerUI")) {
-            yield return SceneManager.LoadSceneAsync("PlayerUI", LoadSceneMode.Additive);
+            SceneManager.LoadSceneAsync("PlayerUI", LoadSceneMode.Additive);
         }
     }
 
-    public IEnumerator LoadLevel(string level)
+    public async void LoadNewLevel(string level)
     {
-        yield return level_loader.Load(level);
+        // load / unload older level
+        await level_loader.Load(level);
 
         // load player if needed
-        yield return LoadPlayer();
+        LoadPlayer();
 
         // unload main menu / level selector
-        yield return UnloadMainMenu();
-        yield return UnloadLevelStart();
+        UnloadMainMenu();
+        UnloadLevelSelector();
     }
 
-    public IEnumerator UnloadPlayer()
+    public void UnloadPlayer()
     {
         if (utils.isSceneLoaded("Player"))
         {
             Debug.Log("unload player");
-            yield return SceneManager.UnloadSceneAsync("Player");
+            SceneManager.UnloadSceneAsync("Player");
         }
 
         if (utils.isSceneLoaded("PlayerUI"))
         {
             Debug.Log("unload player ui");
-            yield return SceneManager.UnloadSceneAsync("PlayerUI");
+            SceneManager.UnloadSceneAsync("PlayerUI");
         }
     }
 
-    public IEnumerator UnloadMainMenu()
+    public void UnloadMainMenu()
     {
         if (utils.isSceneLoaded("MainMenu"))
         {
             Debug.Log("unload main menu");
-            yield return SceneManager.UnloadSceneAsync("MainMenu");
+            SceneManager.UnloadSceneAsync("MainMenu");
         }
     }
 
-    public IEnumerator UnloadLevelStart()
+    public void UnloadLevelSelector()
     {
-        if (utils.isSceneLoaded("LevelStart"))
+        if (utils.isSceneLoaded("LevelSelector"))
         {
-            Debug.Log("unload level start");
-            yield return SceneManager.UnloadSceneAsync("LevelStart");
+            Debug.Log("unload level selector");
+            SceneManager.UnloadSceneAsync("LevelSelector");
         }
     }
 
-    public IEnumerator UnloadCurrentLevel()
+    public void UnloadCurrentLevel()
     {
         var current_level = level_loader.current_level;
 
         if (string.IsNullOrEmpty(current_level) || !utils.isSceneLoaded(current_level))
         {
-            yield break;
+            return;
         }
 
-        yield return SceneManager.UnloadSceneAsync(current_level);
+        SceneManager.UnloadSceneAsync(current_level);
     }
 };

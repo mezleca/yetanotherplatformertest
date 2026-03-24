@@ -101,3 +101,6 @@ InitTestScene*.unity*
 # Recovery bs
 ./Assets/_Recovery/**
 ./Assets/_Recovery.meta
+
+# Game Plan
+./Plan/**

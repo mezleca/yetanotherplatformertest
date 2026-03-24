@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(UIDocument))]
-public class LevelStart : MonoBehaviour {
-    private readonly GameCore core = GameCore.Instance;
+public class LevelSelector : MonoBehaviour {
+    private GameCore core;
     private GameUtils utils;
 
     private readonly string[] Levels = new string[]
@@ -20,8 +20,9 @@ public class LevelStart : MonoBehaviour {
 
     void Awake()
     {
+        core = GameCore.Instance;
         utils = GameUtils.Instance;
-        
+
         ui = GetComponent<UIDocument>().rootVisualElement;
 
         // setup elements
@@ -47,13 +48,6 @@ public class LevelStart : MonoBehaviour {
     {
         level_list.Clear();
 
-        /*
-            <ui:VisualElement name="level">
-                <ui:Label text="Label" name="level-text"/>
-                <ui:Button text="Button" name="level-load"/>
-            </ui:VisualElement>
-        */
-
         foreach (var level in Levels)
         {
             var container = new VisualElement
@@ -73,28 +67,23 @@ public class LevelStart : MonoBehaviour {
                 text = "load"
             };
 
-            level_btn.clicked += () => StartCoroutine(onLevelClick(level));
+            level_btn.clicked += () => onLevelClick(level);
 
             container.Add(level_label);
             container.Add(level_btn);
 
             level_list.Add(container);
-        }       
+        }
     }
 
     // events
     void onBack(ClickEvent ev)
     {
-        if (utils.isSceneLoaded("MainMenu"))
-        {
-            StartCoroutine(core.UnloadLevelStart());
-        }
+        core.UnloadLevelSelector();
     }
 
-    IEnumerator onLevelClick(string level)
+    void onLevelClick(string level)
     {
-        Debug.Log("loading level: " + level);
-
-        yield return core.LoadLevel(level);
+        core.LoadNewLevel(level);
     }
 };

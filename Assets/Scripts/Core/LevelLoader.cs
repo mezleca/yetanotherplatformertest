@@ -1,40 +1,48 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
 
 public class LevelLoader : MonoBehaviour {
     private GameUtils utils;
 
     public string current_level = "";
 
-    void Awake() 
+    void Awake()
     {
         utils = GameUtils.Instance;
         DontDestroyOnLoad(gameObject);
     }
 
-    public IEnumerator Load(string name, bool set_active = true)
+    public async Task Load(string name, bool set_active = true)
     {
         if (utils == null)
         {
             utils = GameUtils.Instance;
         }
 
-        Debug.Log(utils);
-
         if (!string.IsNullOrEmpty(current_level) && utils.isSceneLoaded(current_level))
         {
-            AsyncOperation unload = SceneManager.UnloadSceneAsync(current_level);
-            yield return unload;
+            await SceneManager.UnloadSceneAsync(current_level);
+            Debug.Log("unloading old level: " + current_level);
         }
 
-        yield return SceneManager.LoadSceneAsync(name, LoadSceneMode.Additive);
+        await SceneManager.LoadSceneAsync(name, LoadSceneMode.Additive);
 
-        // TODO: handle errors 
-        if (set_active) 
+        Debug.Log("loaded: " + name);
+
+        // unload level start if needed
+        if (utils.isSceneLoaded("Start") && set_active)
+        {
+            await SceneManager.UnloadSceneAsync("Start");
+            Debug.Log("unloading level selector");
+        }
+
+        // TODO: handle errors
+        if (set_active)
         {
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(name));
-            current_level = name; 
+            current_level = name;
         }
     }
 };

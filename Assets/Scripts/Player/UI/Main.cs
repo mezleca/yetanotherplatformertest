@@ -9,7 +9,7 @@ public class Main : MonoBehaviour
     public VisualElement ui;
 
     // stuff
-    private readonly GameCore core = GameCore.Instance;
+    private GameCore core;
 
     // ui buttons
     private Button btn_play;
@@ -18,12 +18,14 @@ public class Main : MonoBehaviour
 
     void Awake()
     {
+        core = GameCore.Instance;
+
         ui = GetComponent<UIDocument>().rootVisualElement;
 
         // setup elements
         btn_play = ui.Q<Button>("play");
         btn_settings = ui.Q<Button>("settings");
-        btn_exit = ui.Q<Button>("exit"); 
+        btn_exit = ui.Q<Button>("exit");
 
         // setup events
         btn_play.clicked += onPlay;
@@ -38,18 +40,10 @@ public class Main : MonoBehaviour
         btn_exit.clicked -= onExit;
     }
 
-    IEnumerator onPlayAsync()
-    {
-        // load level selector
-        yield return core.LoadLevelStart();
-        
-        // unload main menu
-        yield return core.UnloadCurrentLevel();
-    }
-
     void onPlay()
     {
-        StartCoroutine(onPlayAsync());
+        // load level selector
+        _ = core.LoadLevelStart();
     }
 
     void onSettings()

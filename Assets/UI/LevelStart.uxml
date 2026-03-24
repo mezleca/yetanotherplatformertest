@@ -1,7 +1,7 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/USS/Main.uss?fileID=7433441132597879392&amp;guid=38283e4fbcdc2b7cbbfb6ef844b03744&amp;type=3#Main"/>
     <ui:VisualElement name="panel" class="panel" style="flex-grow: 1; bottom: 0;">
-        <ui:ScrollView name="level-list" style="justify-content: center; align-items: center; align-self: auto; flex-direction: row; height: 100%; padding-top: 12px; padding-right: 12px; padding-bottom: 12px; padding-left: 12px;"/>
+        <ui:ScrollView name="level-list" style="justify-content: flex-end; align-items: center; align-self: flex-start; flex-direction: row; height: 100%; padding-top: 12px; padding-right: 12px; padding-bottom: 12px; padding-left: 12px; align-content: center;"/>
         <ui:VisualElement name="action-menu" style="flex-grow: 1; position: absolute; bottom: 12px; left: 12px;">
             <ui:VisualElement name="back-btn" class="custom-btn" style="flex-grow: 1; flex-direction: row; flex-wrap: nowrap; justify-content: space-between; align-items: center; background-color: rgb(46, 46, 46);">
                 <ui:VisualElement name="icon" class="back-icon" style="flex-grow: 1; width: 16px; height: 16px; background-color: rgba(0, 0, 0, 0); color: rgb(255, 255, 255);"/>

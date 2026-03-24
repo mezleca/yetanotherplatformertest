@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 public class PauseUI : MonoBehaviour
 {
     public VisualElement ui;
-    private GameCore core = GameCore.Instance;
+    private GameCore core;
 
     // ui buttons
     private Button btn_resume;
@@ -19,6 +19,8 @@ public class PauseUI : MonoBehaviour
 
     void Awake()
     {
+        core = GameCore.Instance;
+
         ui = GetComponent<UIDocument>().rootVisualElement;
 
         // setup elements
@@ -43,9 +45,9 @@ public class PauseUI : MonoBehaviour
     {
         is_paused = value;
 
-        //
+        // ensure ui is visible
         pause_container.BringToFront();
-        
+
         // start transition
         if (is_paused)
         {
@@ -54,7 +56,7 @@ public class PauseUI : MonoBehaviour
             pause_container.style.display = DisplayStyle.Flex;
             // TOFIX: transition does not work...
             pause_container.schedule.Execute(() => pause_container.RemoveFromClassList("hidden"));
-            
+
         }
         else
         {
@@ -72,13 +74,14 @@ public class PauseUI : MonoBehaviour
         update_visibility(false);
     }
 
-    public IEnumerator async_return()
+    public async void ui_return()
     {
         Time.timeScale = 1.0f;
-        
-        yield return core.LoadMainMenu();
-        yield return core.UnloadPlayer();
-        yield return core.UnloadCurrentLevel();
+
+        await core.LoadMainMenu();
+
+        core.UnloadPlayer();
+        core.UnloadCurrentLevel();
     }
 
     public void ui_pause()
@@ -90,11 +93,5 @@ public class PauseUI : MonoBehaviour
     private void ui_pause(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
         ui_pause();
-    }
-
-    private void ui_return()
-    {
-        Debug.Log("ui_return: true");
-        StartCoroutine(async_return());
     }
 };
