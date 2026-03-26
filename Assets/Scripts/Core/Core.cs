@@ -48,6 +48,15 @@ public class GameCore : MonoBehaviour {
         _ = LoadMainMenu();
     }
 
+    // bullshit
+
+    public async Task LoadAccessPanel()
+    {
+        if (!utils.isSceneLoaded("AccessPanel")) {
+            await SceneManager.LoadSceneAsync("AccessPanel", LoadSceneMode.Additive);
+        }
+    }
+
     public async Task LoadMainMenu()
     {
         if (!utils.isSceneLoaded("MainMenu")) {
@@ -80,10 +89,6 @@ public class GameCore : MonoBehaviour {
         if (!utils.isSceneLoaded("Player")) {
             SceneManager.LoadSceneAsync("Player", LoadSceneMode.Additive);
         }
-
-        if (!utils.isSceneLoaded("PlayerUI")) {
-            SceneManager.LoadSceneAsync("PlayerUI", LoadSceneMode.Additive);
-        }
     }
 
     public async void LoadNewLevel(string level)
@@ -103,14 +108,15 @@ public class GameCore : MonoBehaviour {
     {
         if (utils.isSceneLoaded("Player"))
         {
-            Debug.Log("unload player");
             SceneManager.UnloadSceneAsync("Player");
         }
+    }
 
-        if (utils.isSceneLoaded("PlayerUI"))
+    public void UnloadAccessPanel()
+    {
+        if (utils.isSceneLoaded("AccessPanel"))
         {
-            Debug.Log("unload player ui");
-            SceneManager.UnloadSceneAsync("PlayerUI");
+            SceneManager.UnloadSceneAsync("AccessPanel");
         }
     }
 
@@ -118,7 +124,6 @@ public class GameCore : MonoBehaviour {
     {
         if (utils.isSceneLoaded("MainMenu"))
         {
-            Debug.Log("unload main menu");
             SceneManager.UnloadSceneAsync("MainMenu");
         }
     }
@@ -127,7 +132,6 @@ public class GameCore : MonoBehaviour {
     {
         if (utils.isSceneLoaded("LevelSelector"))
         {
-            Debug.Log("unload level selector");
             SceneManager.UnloadSceneAsync("LevelSelector");
         }
     }

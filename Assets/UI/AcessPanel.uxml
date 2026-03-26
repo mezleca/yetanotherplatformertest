@@ -1,0 +1,24 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/Main.uss?fileID=7433441132597879392&amp;guid=38283e4fbcdc2b7cbbfb6ef844b03744&amp;type=3#Main"/>
+    <ui:VisualElement name="access-hud" style="flex-grow: 1; flex-direction: column; padding-top: 120px; padding-right: 120px; padding-bottom: 120px; padding-left: 120px; flex-wrap: nowrap; width: 100%; height: 100%; top: 0%; bottom: 0%; left: 0%; right: 0%; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; align-items: center; border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0;">
+        <ui:VisualElement name="access-panel" style="flex-grow: 1; top: 0%; bottom: 0%; width: 50%; height: 50%; padding-top: 24px; padding-right: 24px; padding-bottom: 24px; padding-left: 24px; border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; border-left-color: rgb(111, 111, 111); border-right-color: rgb(111, 111, 111); border-top-color: rgb(111, 111, 111); border-bottom-color: rgb(111, 111, 111); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px;">
+            <ui:VisualElement name="access-display" style="flex-grow: 0; justify-content: flex-start; align-items: center; border-top-left-radius: 6px; border-top-right-radius: 6px; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px; padding-top: 12px; padding-right: 12px; padding-bottom: 12px; padding-left: 12px;">
+                <ui:Label text="&#10;" name="access-text" style="-unity-font-style: bold;"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="access-buttons" style="flex-grow: 0; align-items: flex-start; justify-content: center; align-content: flex-start; flex-shrink: 1; flex-wrap: wrap; align-self: auto;">
+                <ui:Button text="1" name="access-button"/>
+                <ui:Button text="2" name="access-button"/>
+                <ui:Button text="3" name="access-button"/>
+                <ui:Button text="4" name="access-button"/>
+                <ui:Button text="5" name="access-button"/>
+                <ui:Button text="6" name="access-button"/>
+                <ui:Button text="7" name="access-button"/>
+                <ui:Button text="8" name="access-button"/>
+                <ui:Button text="9" name="access-button"/>
+                <ui:Button text="D" name="access-delete" class="delete"/>
+                <ui:Button text="0" name="access-button"/>
+                <ui:Button text="V&#10;" name="access-confirm" class="confirm"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

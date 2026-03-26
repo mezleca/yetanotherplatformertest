@@ -4,24 +4,34 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(GameEntity))]
 public class Player : MonoBehaviour
 {
-    public GameEntity ent;
-    
-    private GameCore core = GameCore.Instance;
-    private bool callbacks_bound = false;
-    private readonly float default_fov = 90.0f;
-    private Vector3 camera_offset = new(0, 0, 0);
+    private GameCore core;
     private new CameraController camera;
 
-    private void Awake()
+    public GameEntity ent;    
+
+    private readonly float default_fov = 90.0f;
+    private Vector3 camera_offset = new(0, 0, 0);
+
+    void Start()
     {
-        ensure_initialized();
+        camera.set_focus(gameObject, default_fov, camera_offset);
     }
 
-    private void bind_callbacks()
+    void Awake()
     {
-        if (callbacks_bound || core == null || ent == null)
+        if (core == null)
         {
-            return;
+            core = GameCore.Instance;
+        }
+
+        if (camera == null)
+        {
+            camera = CameraController.Instance;
+        }
+
+        if (ent == null)
+        {
+            ent = gameObject.AddComponent<GameEntity>();
         }
 
         core.input.Player.Movement.performed += do_walk;
@@ -37,17 +47,10 @@ public class Player : MonoBehaviour
         core.input.Player.Slide.canceled += do_slide;
 
         ent.movement.on_wall_hit += on_wall_hit;
-
-        callbacks_bound = true;
     }
 
-    private void unbind_callbacks()
+    void OnDestroy()
     {
-        if (!callbacks_bound || core == null || ent == null)
-        {
-            return;
-        }
-
         core.input.Player.Movement.performed -= do_walk;
         core.input.Player.Movement.canceled -= do_walk;
 
@@ -60,39 +63,7 @@ public class Player : MonoBehaviour
         core.input.Player.Slide.performed -= do_slide;
         core.input.Player.Slide.canceled -= do_slide;
 
-        ent.movement.on_wall_hit -= on_wall_hit;
-
-        callbacks_bound = false;
-    }
-
-    private void ensure_initialized()
-    {
-        if (ent == null)
-        {
-            ent = gameObject.AddComponent<GameEntity>();
-        }
-
-        if (camera == null)
-        {
-            camera = Camera.main.GetComponent<CameraController>();
-        }
-        
-        bind_callbacks();
-    }
-
-    void Start()
-    {
-        camera.set_focus(gameObject, default_fov, camera_offset);
-    }
-
-    private void OnEnable()
-    {
-        ensure_initialized();
-    }
-
-    private void OnDestroy()
-    {
-        unbind_callbacks();
+        ent.movement.on_wall_hit -= on_wall_hit;    
     }
 
     // handle movement stuff

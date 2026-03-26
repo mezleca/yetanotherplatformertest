@@ -25,17 +25,6 @@ public class EntityMovement : MonoBehaviour
     // movement events
     public Action<GameSide> on_wall_hit;
 
-    public void setup(EntitySensor s)
-    {
-        sensor = s;
-
-        if (sensor != null)
-        {
-            sensor.onHit -= on_hit;
-            sensor.onHit += on_hit;
-        }
-    }
-
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -55,6 +44,17 @@ public class EntityMovement : MonoBehaviour
 
     public Vector3 velocity => rb.linearVelocity;
     public bool on_ground => sensor.is_grounded;
+
+    public void setup(EntitySensor s)
+    {
+        sensor = s;
+
+        if (sensor != null)
+        {
+            sensor.onHit -= on_hit;
+            sensor.onHit += on_hit;
+        }
+    }
 
     public void set_direction(Vector2 dir)
     {
@@ -77,7 +77,7 @@ public class EntityMovement : MonoBehaviour
 
     public void sprint(bool holding)
     {
-        bool can_sprint = on_walk && holding && attributes.stamina > 2.5f;
+        bool can_sprint = holding && attributes.stamina > 2.5f;
 
         velocity_multiplier = can_sprint ?
             Math.Min(velocity_multiplier + sprint_vel, 2.0f) :
@@ -112,14 +112,22 @@ public class EntityMovement : MonoBehaviour
 
     void Update()
     {
-        // update stamina
-        if (on_sprint)
+        float abs_x = MathF.Abs(velocity.x);
+
+        bool is_spriting = on_walk && on_sprint && abs_x > 0;
+        bool is_walking = on_walk && abs_x > 0;
+
+        if (is_spriting)
         {
-            attributes.stamina -= 2.0f * Time.deltaTime;
+            attributes.stamina -= 5.0f * Time.deltaTime;
+        }
+        else if (is_walking)
+        {
+            attributes.stamina -= 3.0f * Time.deltaTime;
         }
         else
         {
-            attributes.stamina += 5.0f * Time.deltaTime;
+            attributes.stamina += 4.0f * Time.deltaTime;
         }
 
         attributes.stamina = Mathf.Clamp(attributes.stamina, 0.0f, attributes.max_stamina);

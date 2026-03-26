@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    public static CameraController Instance { get; set; }
+
     private struct CameraData
     {
         public GameObject target;
@@ -9,13 +11,23 @@ public class CameraController : MonoBehaviour
         public float duration, fov;
     }
 
-    public new Camera camera;
+    public Camera _camera;
     private CameraData data;
+
     private readonly float transition_speed = 10.0f;
 
     void Awake()
     {
-        camera = Camera.main;
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        _camera = Camera.main;
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
     
     void Update()
@@ -43,9 +55,9 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    private void set_fov(float value) => camera.fieldOfView = value;
+    private void set_fov(float value) => _camera.fieldOfView = value;
 
-    private float get_fov() => camera.fieldOfView;
+    private float get_fov() => _camera.fieldOfView;
 
     public void set_focus(GameObject target, float fov = 120.0f, Vector3 offset = new(), float duration = 0.0f)
     {

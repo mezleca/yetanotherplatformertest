@@ -42,15 +42,18 @@ public class EntitySensor : MonoBehaviour
     {
         int best = 0;
         float best_dot = float.MinValue;
+
         for (int i = 0; i < SIDE_DIRECTIONS.Length; i++)
         {
             float dot = Vector2.Dot(SIDE_DIRECTIONS[i], normal);
+
             if (dot > best_dot)
             {
                 best_dot = dot;
                 best = i;
             }
         }
+
         return best;
     }
 
@@ -61,6 +64,7 @@ public class EntitySensor : MonoBehaviour
             is_touching[i] = false;
             hit_per_side[i] = null;
         }
+
         is_grounded = false;
 
         int count = box_collider.GetContacts(contact_filter, contact_buffer);

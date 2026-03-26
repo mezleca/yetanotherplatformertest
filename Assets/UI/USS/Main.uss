@@ -1,12 +1,6 @@
 :root {
 }
 
-.panel,
-#panel {
-    -unity-background-image-tint-color: rgb(36, 36, 36);
-    background-color: rgb(31, 31, 31);
-}
-
 .unity-button {
     background-color: rgb(48, 48, 48);
     -unity-background-image-tint-color: rgb(255, 255, 255);
@@ -52,6 +46,56 @@
     visibility: hidden;
     transition-property: opacity;
     transition-duration: 0.5s;
+}
+
+.panel,
+#panel {
+    -unity-background-image-tint-color: rgb(36, 36, 36);
+    background-color: rgb(31, 31, 31);
+}
+
+#acess-hud {
+    background-color: rgba(50, 50, 50, 0.5);
+}
+
+#access-panel {
+    background-color: rgb(50, 50, 50);
+    min-height: 320px;
+    max-height: 640px;
+}
+
+#access-display {
+    background-color: rgb(4, 4, 4);
+    flex-direction: column;
+    min-height: 64px;
+    max-height: 64px;
+    flex-grow: 0;
+    height: auto;
+}
+
+#access-text {
+    color: rgb(255, 255, 255);
+}
+
+#access-buttons {
+    flex-direction: row;
+    margin-top: 20px;
+}
+
+#access-button, #access-confirm, #access-delete {
+    width: 25%;
+    padding: 18px;
+    border-radius: 6px;
+}
+
+#access-confirm {
+    color: black;
+    background-color: rgb(0, 215, 0);
+}
+
+#access-delete {
+    background-color: rgb(215, 0, 0);
+    color: black;
 }
 
 #level {
