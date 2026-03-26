@@ -27,10 +27,7 @@ class AccessPanel : MonoBehaviour
 
         access_buttons = ui.Q<VisualElement>("access-buttons");
         access_text = ui.Q<Label>("access-text");
-    }
 
-    void setup()
-    {
         access_buttons.Query<Button>().ForEach((btn) => {
             var text = access_text.text;
 
@@ -40,7 +37,7 @@ class AccessPanel : MonoBehaviour
             }
             else if (btn.ClassListContains("delete"))
             {
-                btn.clicked += () => updateText(text[^1..]);
+                btn.clicked += () => updateText("");
             }
             else 
             {
@@ -51,7 +48,6 @@ class AccessPanel : MonoBehaviour
 
     void updateText(string value) 
     {   
-        Debug.Log(value);
         if (locked) return;
         access_text.text = value;
     }
