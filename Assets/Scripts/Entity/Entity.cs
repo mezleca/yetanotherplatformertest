@@ -3,37 +3,47 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(Collider2D))]
-[RequireComponent(typeof(EntityMovement))]
-[RequireComponent(typeof(EntitySensor))]
-[RequireComponent(typeof(EntityAnimator))]
 
 public class GameEntity : MonoBehaviour
 {
+    public BoxCollider2D box_collider;
+    public Rigidbody2D rb;
+    public SpriteRenderer sprite;
+
+    public EntityCombat combat;
+    public EntityAttributes attributes;
     public EntityMovement movement;
     public EntitySensor sensor;
     public EntityAnimator animator;
 
-    void Awake()
-    {
-        movement = GetComponent<EntityMovement>();
-        sensor = GetComponent<EntitySensor>();
-        animator = GetComponent<EntityAnimator>();
+    public Vector3 velocity => rb.linearVelocity;
+    public bool on_ground => sensor.is_grounded;
+    public bool is_flipped => sprite.flipX;
 
-        if (movement == null)
+    void Awake() {
+        box_collider = GetComponent<BoxCollider2D>();
+        rb = GetComponent<Rigidbody2D>();
+        sprite = GetComponent<SpriteRenderer>();
+
+        // setup
+        combat = gameObject.AddComponent<EntityCombat>();
+        movement = gameObject.AddComponent<EntityMovement>();
+        sensor = gameObject.AddComponent<EntitySensor>();
+        animator = gameObject.AddComponent<EntityAnimator>();
+
+        attributes ??= new EntityAttributes();
+
+        // we dont want that
+        var mat = new PhysicsMaterial2D("NoFriction")
         {
-            movement = gameObject.AddComponent<EntityMovement>();
-        }
+            friction = 0,
+            bounciness = 0
+        };
 
-        if (sensor == null)
-        {
-            sensor = gameObject.AddComponent<EntitySensor>();
-        }
+        box_collider.sharedMaterial = mat;
+    }
 
-        if (animator == null)
-        {
-            animator = gameObject.AddComponent<EntityAnimator>();
-        }
-
-        movement.setup(sensor);
+    void OnDestroy() {
+        attributes?.ClearEvents();
     }
 };

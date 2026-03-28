@@ -1,29 +1,30 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class StartPad : MonoBehaviour, IPointerClickHandler
+public class StartPad : MonoBehaviour
 {
+    private AccessPanelUI panel;
     private GameCore core;
 
-    void Awake()
+    void Awake() 
     {
-        if (core == null) 
-        {
-            core = GameCore.Instance;
-        }
-    }
-
-    public void OnPointerClick(PointerEventData event_data)
-    {
-        Debug.Log("clicked");
-        if (event_data.button == PointerEventData.InputButton.Left)
-        {
-            _ = core.LoadAccessPanel();
-        }
-    }
-
-    void Update()
-    {
+        core = GameCore.Instance;
+        panel = core.ui_manager.access_panel;
         
+        panel.OnSuccess += OnSucess;
+    }
+
+    void OnDestroy() {
+        if (panel != null) {
+            panel.OnSuccess -= OnSucess;
+        }
+    }
+
+    void OnSucess(string value) {
+        panel.Hide();
+    }
+
+    void OnMouseDown() {
+        panel.target = "444";
+        panel.Show();
     }
 }

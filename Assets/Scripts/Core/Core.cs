@@ -1,150 +1,82 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class GameCore : MonoBehaviour {
-    public static GameCore Instance { get; set; }
+public class GameCore : MonoBehaviour 
+{
+    public static GameCore Instance { get; private set; }
 
-    // level stuff
-    public LevelLoader level_loader;
-
-    // other stuff
+    // core helpers
+    public CameraController camera_controller;
+    public UIManager ui_manager;
     public GameUtils utils;
     public PlayerInput input;
 
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
+    // TOFIX: meh
+    public string last_loaded_level = "";
+
+    private readonly Stack<GameState> state_stack = new();
+
+    void Awake() {
+        if (Instance != null && Instance != this) {
             Destroy(gameObject);
             return;
         }
 
-        level_loader = gameObject.AddComponent<LevelLoader>();
-        utils = gameObject.AddComponent<GameUtils>();
         input ??= new PlayerInput();
         input.Enable();
 
         Instance = this;
-
         DontDestroyOnLoad(gameObject);
     }
 
-    void OnDestroy()
-    {
+    void Start() {
+        ui_manager = UIManager.Instance;
+        utils = GameUtils.Instance;
+        camera_controller = CameraController.Instance;
+
+        // show main menu by default
+        _ = TransitionTo(new MainMenuState(this));
+    }
+
+    void OnDestroy() {
         Instance = null;
         input?.Dispose();
         input = null;
     }
 
-    void OnDisable()
-    {
+    void OnDisable() {
         input?.Disable();
     }
 
-    private void Start()
-    {
-        _ = LoadMainMenu();
-    }
-
-    // bullshit
-
-    public async Task LoadAccessPanel()
-    {
-        if (!utils.isSceneLoaded("AccessPanel")) {
-            await SceneManager.LoadSceneAsync("AccessPanel", LoadSceneMode.Additive);
-        }
-    }
-
-    public async Task LoadMainMenu()
-    {
-        if (!utils.isSceneLoaded("MainMenu")) {
-            await SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);
-        }
-    }
-
-    public async Task LoadLevelStart()
-    {
-        if (!utils.isSceneLoaded("Start")) {
-            await SceneManager.LoadSceneAsync("Start", LoadSceneMode.Additive);
-
-            LoadPlayer();
-            UnloadMainMenu();
-            UnloadLevelSelector();
-        }
-    }
-
-    public async Task LoadLevelSelector() 
-    {
-        if (!utils.isSceneLoaded("LevelSelector"))
-        {
-            await SceneManager.LoadSceneAsync("LevelSelector", LoadSceneMode.Additive);
-            UnloadMainMenu();
-        }
-    }
-
-    public void LoadPlayer()
-    {
-        if (!utils.isSceneLoaded("Player")) {
-            SceneManager.LoadSceneAsync("Player", LoadSceneMode.Additive);
-        }
-    }
-
-    public async void LoadNewLevel(string level)
-    {
-        // load / unload older level
-        await level_loader.Load(level);
-
-        // load player if needed
-        LoadPlayer();
-
-        // unload main menu / level selector
-        UnloadMainMenu();
-        UnloadLevelSelector();
-    }
-
-    public void UnloadPlayer()
-    {
-        if (utils.isSceneLoaded("Player"))
-        {
-            SceneManager.UnloadSceneAsync("Player");
-        }
-    }
-
-    public void UnloadAccessPanel()
-    {
-        if (utils.isSceneLoaded("AccessPanel"))
-        {
-            SceneManager.UnloadSceneAsync("AccessPanel");
-        }
-    }
-
-    public void UnloadMainMenu()
-    {
-        if (utils.isSceneLoaded("MainMenu"))
-        {
-            SceneManager.UnloadSceneAsync("MainMenu");
-        }
-    }
-
-    public void UnloadLevelSelector()
-    {
-        if (utils.isSceneLoaded("LevelSelector"))
-        {
-            SceneManager.UnloadSceneAsync("LevelSelector");
-        }
-    }
-
-    public void UnloadCurrentLevel()
-    {
-        var current_level = level_loader.current_level;
-
-        if (string.IsNullOrEmpty(current_level) || !utils.isSceneLoaded(current_level))
-        {
-            return;
+    public async Task PushState(GameState next) {
+        if (state_stack.TryPeek(out var current)) {
+            await current.OnPause();
         }
 
-        SceneManager.UnloadSceneAsync(current_level);
+        state_stack.Push(next);
+        await next.OnEnter();
     }
+
+    public async Task PopState() {
+        if (state_stack.TryPop(out var current)) {
+            await current.OnExit();
+        }
+
+        if (state_stack.TryPeek(out var previous)) {
+            await previous.OnResume();
+        }
+    }
+    
+    public async Task TransitionTo(GameState state) {
+        // exit all previous states
+        while (state_stack.Count > 0) {
+            await state_stack.Pop().OnExit();
+        }
+
+        state_stack.Push(state);
+        await state.OnEnter();
+    }
+
+    public GameState GetState() => state_stack.Peek();
 };

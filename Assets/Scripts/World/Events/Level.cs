@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Level : MonoBehaviour
@@ -9,10 +10,10 @@ public class Level : MonoBehaviour
         core = GameCore.Instance;
     }
 
-    void OnTriggerEnter2D(Collider2D other) 
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.layer == 6) {
-            _ = core.LoadLevelSelector();
+        if (other.gameObject.CompareTag("Player")) {
+            core.ui_manager.level_selector.Show();
         }
     }
 }

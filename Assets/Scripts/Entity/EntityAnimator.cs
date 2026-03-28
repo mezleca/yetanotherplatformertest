@@ -1,33 +1,29 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(EntityMovement))]
 
 public class EntityAnimator : MonoBehaviour
 {
-    private Animator animator;
-    private EntityMovement movement;
-
+    private GameEntity ent;
     private bool has_animator;
 
-    void Awake()
-    {
-        animator = GetComponent<Animator>();
-        movement = GetComponent<EntityMovement>();
+    public Animator animator;
+
+    void Awake() {
+        ent = gameObject.GetComponent<GameEntity>();
+        animator = gameObject.GetComponent<Animator>();
 
         has_animator = animator != null && animator.runtimeAnimatorController != null;
     }
 
-    void Update()
-    {
-        if (!has_animator) 
-        {
+    void Update() {
+        if (!has_animator) {
             return;
         }
 
-        animator.SetFloat("Speed", Mathf.Abs(movement.velocity.x / movement.attributes.max_x_speed));
-        animator.SetFloat("yVel",  movement.velocity.y);
-        animator.SetBool("onJump", movement.on_jump);
-        animator.SetBool("onGround", movement.on_ground);
+        animator.SetFloat("Speed", Mathf.Abs(ent.velocity.x / ent.attributes.velocity.max));
+        animator.SetFloat("yVel",  ent.velocity.y);
+        animator.SetBool("onJump", ent.movement.on_jump);
+        animator.SetBool("onGround", ent.on_ground);
     }
 };

@@ -1,0 +1,9 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/Main.uss?fileID=7433441132597879392&amp;guid=38283e4fbcdc2b7cbbfb6ef844b03744&amp;type=3#Main"/>
+    <ui:VisualElement name="hud-container" style="flex-grow: 1; flex-direction: column; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; flex-wrap: nowrap; width: 100%; height: 100%; background-color: rgba(43, 43, 43, 0.83);">
+        <ui:VisualElement name="death-screen" style="flex-grow: 1; justify-content: center; align-self: center; flex-direction: column; align-items: center; position: absolute; height: 100%; top: 0; width: 100%; flex-wrap: nowrap; align-content: flex-start;">
+            <ui:Label text="dead" name="death-text" style="-unity-font-style: bold;"/>
+            <ui:Button text="retry" name="retry-btn"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

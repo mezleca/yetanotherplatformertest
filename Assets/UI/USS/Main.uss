@@ -41,13 +41,6 @@
     border-bottom-color: rgb(255, 255, 255);
 }
 
-.hidden {
-    opacity: 0;
-    visibility: hidden;
-    transition-property: opacity;
-    transition-duration: 0.5s;
-}
-
 .panel,
 #panel {
     -unity-background-image-tint-color: rgb(36, 36, 36);
@@ -71,6 +64,16 @@
     max-height: 64px;
     flex-grow: 0;
     height: auto;
+}
+
+#death-text {
+    color: rgb(255, 0, 0);
+    font-size: 32px;
+    font-weight: bold;
+}
+
+#death-text:hover {
+    color: rgb(255, 255, 255);
 }
 
 #access-text {
