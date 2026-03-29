@@ -36,7 +36,6 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-        float current_fov = get_fov();
         Vector3 current = transform.position, target = data.target.transform.position, offset = data.offset;
         
         if (current != target) {
@@ -47,8 +46,8 @@ public class CameraController : MonoBehaviour
             );
         }
 
-        if (data.fov != current_fov) {
-            set_fov(Mathf.Lerp(current_fov, data.fov, transition_speed * Time.deltaTime));
+        if (data.fov != cur_fov) {
+            set_fov(Mathf.Lerp(cur_fov, data.fov, transition_speed * Time.deltaTime));
         }
     }
 
@@ -60,5 +59,7 @@ public class CameraController : MonoBehaviour
     }
 
     private void set_fov(float value) => _camera.fieldOfView = value;
-    private float get_fov() => _camera.fieldOfView;
+
+    public float cur_fov => _camera.fieldOfView;
+    public Vector3 cur_offset => data.offset;
 };

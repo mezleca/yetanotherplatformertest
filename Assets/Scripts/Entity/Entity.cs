@@ -30,8 +30,7 @@ public class GameEntity : MonoBehaviour
         movement = gameObject.AddComponent<EntityMovement>();
         sensor = gameObject.AddComponent<EntitySensor>();
         animator = gameObject.AddComponent<EntityAnimator>();
-
-        attributes ??= new EntityAttributes();
+        attributes = gameObject.AddComponent<EntityAttributes>();
 
         // we dont want that
         var mat = new PhysicsMaterial2D("NoFriction")

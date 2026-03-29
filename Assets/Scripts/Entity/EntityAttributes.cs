@@ -25,35 +25,41 @@ public struct Attr<T> where T : IComparable<T>
         return v;
     }
 
-    public Attr(T value, T max) {
+    public Attr(T value) {
         _value = default;
-        _max = max;
+        _max = value;
         this.value = value;
     }
 }
 
-public class EntityAttributes 
+public class EntityAttributes : MonoBehaviour 
 {
+    public GameEntity ent;
+
     // events
-    public Action OnDeath;
-    public Action OnDamage;
+    public Action<HitInfo> OnDeath;
+    public Action<HitInfo> OnDamage;
 
-    public Attr<float> velocity = new(10.0f, 10.0f);
-    public Attr<float> health = new(10.0f, 10.0f);
-    public Attr<float> stamina = new(5.0f, 5.0f);
-    public Attr<float> push_force = new(3.5f, 3.5f);
-    public Attr<float> jump_force = new(15.0f, 15.0f);
-    public Attr<float> wall_jump_delay = new(0.050f, 0.050f); // seconds
+    public Attr<float> velocity = new(10.0f);
+    public Attr<float> health = new(10.0f);
+    public Attr<float> stamina = new(5.0f);
+    public Attr<float> push_force = new(3.5f);
+    public Attr<float> jump_force = new(5.0f);
+    public Attr<float> wall_jump_delay = new(0.050f); // seconds
 
-    public void TakeDamage(float value) {
-        health.value -= value;
-        OnDamage?.Invoke();
+    void Awake() {
+        ent = GetComponent<GameEntity>();
+    }
 
-        Debug.Log($"ENTITY: took {value} damage | health: {health.value}");
+    public void TakeDamage(HitInfo hit) {
+        health.value -= hit.damage;
+        OnDamage?.Invoke(hit);
+
+        Vector3 dir = (transform.position - hit.position).normalized;
+        ent.movement.add_impulse(dir.x * hit.force, dir.y);
 
         if (health.value <= 0) {
-            Debug.Log("ENTITY: should be dead");
-            OnDeath?.Invoke();
+            OnDeath?.Invoke(hit);
         }
     }
 
